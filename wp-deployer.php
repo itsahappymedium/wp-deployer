@@ -1,6 +1,4 @@
 <?php
-require_once('recipe/common.php');
-
 use function Deployer\{
   add,
   after,
@@ -25,6 +23,8 @@ use Symfony\Component\Yaml\Yaml;
 
 class WP_Deployer {
   function __construct($config_file = null) {
+    require_once('recipe/common.php');
+
     if (!$config_file) $config_file = 'config.yml';
 
     set('forwardAgent', true);
