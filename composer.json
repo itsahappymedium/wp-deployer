@@ -1,0 +1,29 @@
+{
+  "name": "itsahappymedium/wp-deployer",
+  "description": "Deploy WordPress websites with ease.",
+  "keywords": [
+    "deploy",
+    "git",
+    "wordpress"
+  ],
+  "authors": [
+    {
+      "name": "Happy Medium",
+      "email": "developers@itsahappymedium.com",
+      "homepage": "https://itsahappymedium.com"
+    }
+  ],
+  "homepage": "https://github.com/itsahappymedium/wp-deployer",
+  "license": "MIT",
+  "autoload": {
+    "files": [
+      "wp-deployer.php"
+    ]
+  },
+  "require": {
+    "php": "^7.3|^8.0",
+    "deployer/dist": "^6.8",
+    "twig/twig": "^3.3",
+    "wp-cli/wp-cli-bundle": "^2.3"
+  }
+}

@@ -1,0 +1,46 @@
+.default: &default
+  application: my_website
+  theme_name: '{{application}}'
+  repository: git@github.com:itsahappymedium/{{application}}.git
+  url: http://{{application}}.dev
+  wp_user: admin
+  wp_email: developers@itsahappymedium.com
+  database:
+    host: localhost
+    database: database_name
+    username: database_user
+    password: database_pass
+  wp_config_constants: &default_wp_config_constants
+    ENV: local
+
+staging-server:
+  <<: *default
+  hostname: 123.456.78.90
+  stage: staging
+  branch: development
+  user: www-data
+  url: http://{{application}}.staging.com
+  database:
+    host: localhost
+    database: database_name
+    username: database_user
+    password: database_pass
+  wp_config_constants:
+    <<: *default_wp_config_constants
+    ENV: staging
+
+production-server:
+  <<: *default
+  hostname: 098.765.43.21
+  stage: production
+  branch: main
+  user: www-data
+  url: PRODUCTION_SITE_URL
+  database:
+    host: localhost
+    database: database_name
+    username: database_user
+    password: database_pass
+  wp_config_constants:
+    <<: *default_wp_config_constants
+    ENV: production

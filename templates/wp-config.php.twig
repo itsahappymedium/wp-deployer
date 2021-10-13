@@ -1,0 +1,58 @@
+<?php
+define('DB_NAME', '{{ config['database']['database'] }}');
+define('DB_USER', '{{ config['database']['username'] }}');
+define('DB_PASSWORD', '{{ config['database']['password'] }}');
+define('DB_HOST', '{{ config['database']['host'] }}');
+define('DB_CHARSET', 'utf8');
+define('DB_COLLATE', '');
+define('WPLANG', '');
+
+$table_prefix = 'wp_';
+
+{{ secret_keys|raw }}
+
+{% if config['wp_config_constants'] is defined %}
+{% for constant_key, constant_value in config['wp_config_constants'] %}
+{% if constant_value is iterable %}
+define('{{ constant_key }}', array('{{ constant_value|join("', '")|raw }}'));
+{% else %}
+define('{{ constant_key }}', '{{ constant_value }}');
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if url matches '/^https/' %}
+define('FORCE_SSL_ADMIN', true);
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+  $_SERVER['HTTPS'] = 'on';
+}
+{% endif %}
+
+define('WP_HOME','{{ url }}');
+define('WP_SITEURL','{{ wp_site_url }}');
+define('WP_CONTENT_URL', '{{ url }}/{{ wp_content_dir }}');
+{% if env == 'local' %}
+define('WP_CONTENT_DIR', realpath(dirname(__FILE__) . '/content'));
+{% else %}
+if (defined('WP_CLI') && WP_CLI) {
+  define('WP_CONTENT_DIR', '{{ deploy_path }}/current/{{ wp_content_dir }}');
+} else {
+  define('WP_CONTENT_DIR', realpath($_SERVER['DOCUMENT_ROOT'] . '/{{ wp_content_dir }}'));
+}
+{% endif %}
+
+{% if env == 'local' %}
+@ini_set('display_errors', 0);
+define('WP_DEBUG', true);
+define('WP_DEBUG_DISPLAY', false);
+define('WP_DEBUG_LOG', true);
+define('SAVEQUERIES', true);
+define('SCRIPT_DEBUG', true);
+{% endif %}
+
+if (!defined('ABSPATH')) {
+  define('ABSPATH', dirname(__FILE__) . '/');
+}
+
+require_once(ABSPATH . '../vendor/autoload.php');
+require_once(ABSPATH . 'wp-settings.php');
