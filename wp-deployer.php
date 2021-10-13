@@ -302,11 +302,15 @@ class WP_Deployer {
 
     if ($property) {
       if (array_key_exists($property, $contents)) {
-        return $contents[$property];
+        $contents = $contents[$property];
       } else {
         return false;
       }
     }
+
+    array_walk_recursive($contents, function (&$value) {
+      if (is_string($value)) $value = parse($value);
+    });
 
     return $contents;
   }
