@@ -166,7 +166,7 @@ class WP_Deployer {
 
       run('mkdir -p {{shared_path}}/db_backups');
       cd('{{release_path}}');
-      run("./vendor/bin/wp db export {{shared_path}}/$db_file --add-drop-table");
+      runLocally("./vendor/bin/wp db export {{shared_path}}/$db_file --add-drop-table --ssh={{user}}@{{hostname}}:{{release_path}}");
       runLocally('mkdir -p db_backups');
       download("{{shared_path}}/$db_file", $db_file);
       runLocally("./vendor/bin/wp db import $db_file");
@@ -188,8 +188,8 @@ class WP_Deployer {
       run('mkdir -p {{shared_path}}/db_backups');
       upload($db_file, "{{shared_path}}/$db_file");
       cd('{{release_path}}');
-      run("./vendor/bin/wp db import {{shared_path}}/$db_file");
-      run("./vendor/bin/wp search-replace $local_url {{url}}");
+      runLocally("./vendor/bin/wp db import {{shared_path}}/$db_file --ssh={{user}}@{{hostname}}:{{release_path}}");
+      runLocally("./vendor/bin/wp search-replace $local_url {{url}} --ssh={{user}}@{{hostname}}:{{release_path}}");
       run("rm {{shared_path}}/$db_file");
       runLocally("rm $db_file");
     })->once();
@@ -261,7 +261,7 @@ class WP_Deployer {
       invoke('deploy:shared');
 
       cd('{{release_path}}');
-      run("./vendor/bin/wp core install --url='{{url}}' --title='{{application}}' --admin_user='{{wp_user}}' --admin_password='$pass' --admin_email='{{wp_email}}'");
+      runLocally("./vendor/bin/wp core install --url='{{url}}' --title='{{application}}' --admin_user='{{wp_user}}' --admin_password='$pass' --admin_email='{{wp_email}}' --ssh={{user}}@{{hostname}}:{{release_path}}");
     });
 
     desc('Pulls the uploads');
