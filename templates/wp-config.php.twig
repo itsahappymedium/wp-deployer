@@ -32,7 +32,7 @@ define('WP_HOME','{{ url }}');
 define('WP_SITEURL','{{ wp_site_url }}');
 define('WP_CONTENT_URL', '{{ url }}/{{ wp_content_dir }}');
 {% if env == 'local' %}
-define('WP_CONTENT_DIR', realpath(dirname(__FILE__) . '/content'));
+define('WP_CONTENT_DIR', realpath(dirname(__FILE__) . '/{{ wp_content_dir }}'));
 {% else %}
 if (defined('WP_CLI') && WP_CLI) {
   define('WP_CONTENT_DIR', '{{ deploy_path }}/current/{{ wp_content_dir }}');
@@ -54,5 +54,14 @@ if (!defined('ABSPATH')) {
   define('ABSPATH', dirname(__FILE__) . '/');
 }
 
-require_once(ABSPATH . '../vendor/autoload.php');
+{% if env == 'local' %}
+require_once(realpath(dirname(__FILE__) . '/vendor/autoload.php'));
+{% else %}
+if (defined('WP_CLI') && WP_CLI) {
+  require_once('{{ deploy_path }}/current/vendor/autoload.php');
+} else {
+  require_once(realpath($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'));
+}
+{% endif %}
+
 require_once(ABSPATH . 'wp-settings.php');
