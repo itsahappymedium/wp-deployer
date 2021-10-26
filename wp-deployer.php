@@ -10,6 +10,7 @@ use function Deployer\{
   get,
   inventory,
   invoke,
+  parse,
   task,
   run,
   runLocally,
