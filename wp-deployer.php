@@ -44,11 +44,11 @@ class WP_Deployer {
     set('templates_path', 'templates');
     set('tmp_path', 'tmp');
 
-    set('compiled_theme_files', array(
-      '*.css',
-      '*.map',
-      'js/*.js',
-      'js/*.map'
+    set('extra_files', array(
+      '{{wp_content_dir}}/themes/{{theme_name}}/*.css',
+      '{{wp_content_dir}}/themes/{{theme_name}}/*.map',
+      '{{wp_content_dir}}/themes/{{theme_name}}/js/*.js',
+      '{{wp_content_dir}}/themes/{{theme_name}}/js/*.map'
     ));
 
     set('clear_paths', array(
@@ -90,7 +90,7 @@ class WP_Deployer {
       'deploy:lock',
       'deploy:release',
       'deploy:update_code',
-      'deploy:compiled',
+      'deploy:extra_files',
       'deploy:shared',
       'deploy:writable',
       'deploy:vendors',
@@ -102,9 +102,9 @@ class WP_Deployer {
       'success'
     ));
 
-    desc('Uploads compiled theme files');
-    task('deploy:compiled', function () {
-      $included_files = get('compiled_theme_files');
+    desc('Uploads extra_files');
+    task('deploy:extra_files', function () {
+      $included_files = get('extra_files');
 
       if (!$included_files || empty($included_files)) return;
 
@@ -113,14 +113,14 @@ class WP_Deployer {
         'rsync',
         '-azP',
         '-e "ssh -A"',
-        '{{wp_content_dir}}/themes/{{theme_name}}/',
-        '{{user}}@{{hostname}}:{{release_path}}/content/themes/{{theme_name}}',
+        '.',
+        '{{user}}@{{hostname}}:{{release_path}}',
         '--verbose',
         '--delete'
       ));
 
       foreach($included_files as $file_path) {
-        $tree = explode('/', $file_path);
+        $tree = explode('/', ltrim($file_path, '/'));
         $tree_count = count($tree);
 
         foreach($tree as $i => $file) {

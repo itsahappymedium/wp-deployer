@@ -58,9 +58,9 @@ These variables are custom to WP-Deployer.
 | Variable             | Default Value        | Description                                                                                                                                  |
 |----------------------|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | **application**      |                      | The name of the application.                                                                                                                 |
-| compiled_theme_files | (See below)          | An array of files (or file globs) from your theme's directory that are not included in your repo and should be uploaded during a deployment. |
 | **database**         |                      | Database information. An object with `database`, `host`, `username`, and `password` set.                                                     |
 | db_backups_path      | db_backups           | The path where database exports are stored. (This path should be added to `.gitignore`)                                                      |
+| extra_files          | (See below)          | An array of files (or file globs) that are not included in your repo and should be uploaded during a deployment (Such as compiled files).    |
 | **public_path**      | /var/www/public      | The path where your server expects the website to be located and available to the public.                                                    |
 | templates_path       | templates            | The path where template files are located.                                                                                                   |
 | tmp_path             | tmp                  | The path where temporary files are stored. (This path should be added to `.gitignore`)                                                       |
@@ -75,13 +75,13 @@ These variables are custom to WP-Deployer.
 \* **Bold variable names are required to be set.**
 
 <details>
-<summary>compiled_theme_files default value</summary>
+<summary>extra_files default value</summary>
 
 ```
-*.css
-*.map
-js/*.js
-js/*.map
+{{wp_content_dir}}/themes/{{theme_name}}/*.css
+{{wp_content_dir}}/themes/{{theme_name}}/*.map
+{{wp_content_dir}}/themes/{{theme_name}}/js/*.js
+{{wp_content_dir}}/themes/{{theme_name}}/js/*.map
 ```
 </details>
 
@@ -158,6 +158,27 @@ robots.txt
 wp-config.php
 ```
 </details>
+
+
+### Overwriting Variables
+
+You can easily overwrite any of the above variables by defining them in your `config.yml` file. You can also overwrite or add to them by using [Deployer Functions](https://deployer.org/docs/6.x/api) in your `deploy.php` file like this:
+
+```php
+<?php
+require_once('./vendor/autoload.php');
+new WP_Deployer();
+
+use function Deployer\{ add, set };
+
+add('extra_files', array(
+  'scripts.js',
+  'lib/bootstrap/bootstrap.css'
+));
+
+set('ssh_multiplexing', false);
+?>
+```
 
 
 ### Templates
