@@ -1,9 +1,7 @@
 <?php
 use function Deployer\{
-  add,
   after,
   askConfirmation,
-  before,
   cd,
   desc,
   download,
