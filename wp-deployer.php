@@ -6,6 +6,7 @@ use function Deployer\{
   desc,
   download,
   get,
+  has,
   inventory,
   invoke,
   parse,
@@ -206,13 +207,14 @@ class WP_Deployer {
       $config = $this->load_yml('config.yml', '.default');
       $pass = $this->generate_random_string();
       $data = array(
-        'config'          => $config,
-        'deploy_path'     => get('deploy_path'),
-        'env'             => 'local',
-        'secret_keys'     => $this->generate_secrets(),
-        'url'             => $config['url'],
-        'wp_content_dir'  => get('wp_content_dir'),
-        'wp_site_url'     => get('wp_site_url')
+        'database'            => $config['database'],
+        'deploy_path'         => get('deploy_path'),
+        'env'                 => 'local',
+        'secret_keys'         => $this->generate_secrets(),
+        'url'                 => $config['url'],
+        'wp_config_constants' => array_key_exists('wp_config_constants', $config) ? $config['wp_config_constants'] : array(),
+        'wp_content_dir'      => get('wp_content_dir'),
+        'wp_site_url'         => get('wp_site_url')
       );
 
       foreach($templates as $template) {
@@ -235,13 +237,14 @@ class WP_Deployer {
       $pass = $this->generate_random_string();
       $stage = get('stage');
       $data = array(
-        'config'          => $this->load_yml('config.yml', get('host')),
-        'deploy_path'     => get('deploy_path'),
-        'env'             => $stage,
-        'secret_keys'     => $this->generate_secrets(),
-        'url'             => get('url'),
-        'wp_content_dir'  => get('wp_content_dir'),
-        'wp_site_url'     => get('wp_site_url')
+        'database'            => get('database'),
+        'deploy_path'         => get('deploy_path'),
+        'env'                 => $stage,
+        'secret_keys'         => $this->generate_secrets(),
+        'url'                 => get('url'),
+        'wp_config_constants' => has('wp_config_constants') ? get('wp_config_constants') : array(),
+        'wp_content_dir'      => get('wp_content_dir'),
+        'wp_site_url'         => get('wp_site_url')
       );
 
       runLocally('mkdir -p {{tmp_path}}');
@@ -249,11 +252,11 @@ class WP_Deployer {
       foreach($templates as $template) {
         $contents = $this->render_template($template, $data);
         $file_name = substr($template, 0, -5);
-        $tmp_name = "{{tmp_path}}/$file . $stage";
+        $tmp_name = parse("{{tmp_path}}/$file_name.$stage");
 
         file_put_contents($tmp_name, $contents);
 
-        upload($tmp_name, "{{shared_path}}/$file");
+        upload($tmp_name, "{{shared_path}}/$file_name");
         runLocally("rm $tmp_name");
       }
 

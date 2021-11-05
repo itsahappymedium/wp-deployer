@@ -1,8 +1,8 @@
 <?php
-define('DB_NAME', '{{ config['database']['database'] }}');
-define('DB_USER', '{{ config['database']['username'] }}');
-define('DB_PASSWORD', '{{ config['database']['password'] }}');
-define('DB_HOST', '{{ config['database']['host'] }}');
+define('DB_NAME', '{{ database['database'] }}');
+define('DB_USER', '{{ database['username'] }}');
+define('DB_PASSWORD', '{{ database['password'] }}');
+define('DB_HOST', '{{ database['host'] }}');
 define('DB_CHARSET', 'utf8');
 define('DB_COLLATE', '');
 define('WPLANG', '');
@@ -11,8 +11,8 @@ $table_prefix = 'wp_';
 
 {{ secret_keys|raw }}
 
-{% if config['wp_config_constants'] is defined %}
-{% for constant_key, constant_value in config['wp_config_constants'] %}
+{% if wp_config_constants is defined %}
+{% for constant_key, constant_value in wp_config_constants %}
 {% if constant_value is iterable %}
 define('{{ constant_key }}', array('{{ constant_value|join("', '")|raw }}'));
 {% else %}
