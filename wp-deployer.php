@@ -208,13 +208,13 @@ class WP_Deployer {
       $pass = $this->generate_random_string();
       $data = array(
         'database'            => $config['database'],
-        'deploy_path'         => get('deploy_path'),
+        'deploy_path'         => array_key_exists('deploy_path', $config) ? $config['deploy_path'] : '/var/www/public_html',
         'env'                 => 'local',
         'secret_keys'         => $this->generate_secrets(),
         'url'                 => $config['url'],
         'wp_config_constants' => array_key_exists('wp_config_constants', $config) ? $config['wp_config_constants'] : array(),
-        'wp_content_dir'      => get('wp_content_dir'),
-        'wp_site_url'         => get('wp_site_url')
+        'wp_content_dir'      => array_key_exists('wp_content_dir', $config) ? $config['wp_content_dir'] : 'wp-content/content',
+        'wp_site_url'         => array_key_exists('wp_site_url', $config) ? $config['wp_site_url'] : $config['url']
       );
 
       foreach($templates as $template) {
@@ -224,8 +224,8 @@ class WP_Deployer {
         file_put_contents($file_name, $contents);
       }
 
-      runLocally("./vendor/bin/wp core install --url='{{url}}' --title='{{application}}' --admin_user='{{wp_user}}' --admin_password='$pass' --admin_email='{{wp_email}}'");
-      writeln('Username: {{wp_user}}');
+      runLocally("./vendor/bin/wp core install --url='{$config['url']}' --title='{$config['application']}' --admin_user='{$config['wp_user']}' --admin_password='$pass' --admin_email='{$config['wp_email']}'");
+      writeln("Username: {$config['wp_user']}");
       writeln("Password: $pass");
     });
 
