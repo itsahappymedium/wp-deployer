@@ -78,6 +78,7 @@ These variables are custom to WP-Deployer.
 <summary>extra_files default value</summary>
 
 ```
+auth.json
 {{wp_content_dir}}/themes/{{theme_name}}/*.css
 {{wp_content_dir}}/themes/{{theme_name}}/*.map
 {{wp_content_dir}}/themes/{{theme_name}}/js/*.js
@@ -133,6 +134,7 @@ These variables are built-in to Deployer. You can read more here: https://deploy
 templates
 .gitignore
 .lando.yml
+auth.json
 composer.json
 composer.lock
 config.yml

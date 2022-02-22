@@ -44,6 +44,7 @@ class WP_Deployer {
     set('tmp_path', 'tmp');
 
     set('extra_files', array(
+      'auth.json',
       '{{wp_content_dir}}/themes/{{theme_name}}/*.css',
       '{{wp_content_dir}}/themes/{{theme_name}}/*.map',
       '{{wp_content_dir}}/themes/{{theme_name}}/js/*.js',
@@ -55,6 +56,7 @@ class WP_Deployer {
       'templates',
       '.gitignore',
       '.lando.yml',
+      'auth.json',
       'composer.json',
       'composer.lock',
       'config.yml',
