@@ -14,7 +14,15 @@ $table_prefix = 'wp_';
 {% if wp_config_constants is defined %}
 {% for constant_key, constant_value in wp_config_constants %}
 {% if constant_value is iterable %}
+{% if constant_value[0] is defined %}
 define('{{ constant_key }}', array('{{ constant_value|join("', '")|raw }}'));
+{% else %}
+define('{{ constant_key }}', array(
+{% for constant_item_key, constant_item_value in constant_value %}
+  '{{ constant_item_key }}' => '{{ constant_item_value }}',
+{% endfor %}
+));
+{% endif %}
 {% else %}
 define('{{ constant_key }}', '{{ constant_value }}');
 {% endif %}
