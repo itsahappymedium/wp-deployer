@@ -227,7 +227,8 @@ class WP_Deployer {
       }
 
       runLocally("./vendor/bin/wp core install --url='{$config['url']}' --title='{$config['application']}' --admin_user='{$config['wp_user']}' --admin_password='$pass' --admin_email='{$config['wp_email']}'");
-      
+      runLocally("./vendor/bin/wp theme activate {$config['theme_name']}");
+
       writeln('');
       writeln('----------------------------------');
       writeln("| Username: {$config['wp_user']}");
@@ -241,6 +242,7 @@ class WP_Deployer {
       if (!(askConfirmation('This command should only be ran on a new website! Continue?'))) return;
 
       $templates = $this->get_templates_list();
+      $theme = get('theme_name');
       $pass = $this->generate_random_string();
       $stage = get('stage');
       $data = array(
@@ -271,6 +273,7 @@ class WP_Deployer {
 
       cd('{{release_path}}');
       runLocally("./vendor/bin/wp core install --url='{{url}}' --title='{{application}}' --admin_user='{{wp_user}}' --admin_password='$pass' --admin_email='{{wp_email}}' --ssh={{user}}@{{hostname}}:{{release_path}}");
+      runLocally("./vendor/bin/wp theme activate {$theme}");
     });
 
     desc('Pulls the uploads');
