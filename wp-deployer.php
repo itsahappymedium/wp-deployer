@@ -227,8 +227,13 @@ class WP_Deployer {
       }
 
       runLocally("./vendor/bin/wp core install --url='{$config['url']}' --title='{$config['application']}' --admin_user='{$config['wp_user']}' --admin_password='$pass' --admin_email='{$config['wp_email']}'");
-      writeln("Username: {$config['wp_user']}");
-      writeln("Password: $pass");
+      
+      writeln('');
+      writeln('----------------------------------');
+      writeln("| Username: {$config['wp_user']}");
+      writeln("| Password: $pass");
+      writeln('----------------------------------');
+      writeln('');
     });
 
     desc('Generates the wp-config.php file for staging or production');
