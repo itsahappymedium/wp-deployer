@@ -12,15 +12,28 @@ $table_prefix = 'wp_';
 {{ secret_keys|raw }}
 
 {% if wp_config_constants is defined %}
+{% macro constant_arr(arr) %}
+{% for arr_key, arr_value in arr %}
+{% if arr_value is iterable %}
+{% if arr_value[0] is defined %}
+    '{{ arr_key }}' => array('{{ arr_value|join("', '")|raw }}'),
+{% else %}
+  '{{ arr_key }}' => array(
+{{ _self.constant_arr(arr_value) }}
+  ),
+{% endif %}
+{% else %}
+    '{{ arr_key }}' => '{{ arr_value }}',
+{% endif %}
+{% endfor %}
+{% endmacro %}
 {% for constant_key, constant_value in wp_config_constants %}
 {% if constant_value is iterable %}
 {% if constant_value[0] is defined %}
 define('{{ constant_key }}', array('{{ constant_value|join("', '")|raw }}'));
 {% else %}
 define('{{ constant_key }}', array(
-{% for constant_item_key, constant_item_value in constant_value %}
-  '{{ constant_item_key }}' => '{{ constant_item_value }}',
-{% endfor %}
+{{ _self.constant_arr(constant_value) }}
 ));
 {% endif %}
 {% else %}
