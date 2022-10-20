@@ -7,7 +7,7 @@ define('DB_CHARSET', 'utf8');
 define('DB_COLLATE', '');
 define('WPLANG', '');
 
-$table_prefix = 'wp_';
+$table_prefix = '{{ database['table_prefix']|default('wp_') }}';
 
 {{ secret_keys|raw }}
 
