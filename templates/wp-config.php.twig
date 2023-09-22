@@ -45,6 +45,8 @@ define('{{ constant_key }}', {{ _self.constant_val(constant_value) }});
 {% endfor %}
 {% endif %}
 
+{% if wp_config_add is defined %}{{ wp_config_add|raw }}{% endif %}
+
 {% if url matches '/^https/' %}
 define('FORCE_SSL_ADMIN', true);
 if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {

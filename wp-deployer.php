@@ -215,6 +215,7 @@ class WP_Deployer {
         'secret_keys'         => $this->generate_secrets(),
         'url'                 => $config['url'],
         'wp_config_constants' => array_key_exists('wp_config_constants', $config) ? $config['wp_config_constants'] : array(),
+        'wp_config_add'       => array_key_exists('wp_config_add', $config) ? $config['wp_config_add'] : null,
         'wp_content_dir'      => array_key_exists('wp_content_dir', $config) ? $config['wp_content_dir'] : 'wp-content/content',
         'wp_site_url'         => array_key_exists('wp_site_url', $config) ? $config['wp_site_url'] : $config['url']
       );
@@ -252,6 +253,7 @@ class WP_Deployer {
         'secret_keys'         => $this->generate_secrets(),
         'url'                 => get('url'),
         'wp_config_constants' => has('wp_config_constants') ? get('wp_config_constants') : array(),
+        'wp_config_add'       => has('wp_config_add') ? get('wp_config_add') : null,
         'wp_content_dir'      => get('wp_content_dir'),
         'wp_site_url'         => get('wp_site_url')
       );
