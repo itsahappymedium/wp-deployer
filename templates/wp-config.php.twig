@@ -12,32 +12,35 @@ $table_prefix = '{{ database['table_prefix']|default('wp_') }}';
 {{ secret_keys|raw }}
 
 {% if wp_config_constants is defined %}
-{% macro constant_arr(arr) %}
+{% macro constant_arr(arr, level) %}
 {% for arr_key, arr_value in arr %}
 {% if arr_value is iterable %}
 {% if arr_value[0] is defined %}
-    '{{ arr_key }}' => array('{{ arr_value|join("', '")|raw }}'),
+{% for i in range(0, level) %}  {% endfor %}'{{ arr_key }}' => array({{ _self.constant_inline_arr(arr_value) }}),
 {% else %}
-  '{{ arr_key }}' => array(
-{{ _self.constant_arr(arr_value) }}
-  ),
+{% for i in range(0, level) %}  {% endfor %}'{{ arr_key }}' => array(
+{{ _self.constant_arr(arr_value, level + 1) }}{% for i in range(0, level) %}  {% endfor %}),
 {% endif %}
 {% else %}
-    '{{ arr_key }}' => '{{ arr_value }}',
+{% for i in range(0, level) %}  {% endfor %}'{{ arr_key }}' => {{ _self.constant_val(arr_value) }},
 {% endif %}
 {% endfor %}
 {% endmacro %}
+{% macro constant_val(val) %}
+{% if val is same as(true) %}true{% elseif val is same as(false) %}false{% else %}'{{ val }}'{% endif %}
+{% endmacro %}
+{% macro constant_inline_arr(arr) %}
+{% for key, value in arr %}{{ _self.constant_val(value) }}{% if key != arr|length - 1 %}, {% endif %}{% endfor %}{% endmacro %}
 {% for constant_key, constant_value in wp_config_constants %}
 {% if constant_value is iterable %}
 {% if constant_value[0] is defined %}
-define('{{ constant_key }}', array('{{ constant_value|join("', '")|raw }}'));
+define('{{ constant_key }}', array({{ _self.constant_inline_arr(constant_value) }}));
 {% else %}
 define('{{ constant_key }}', array(
-{{ _self.constant_arr(constant_value) }}
-));
+{{ _self.constant_arr(constant_value) }}));
 {% endif %}
 {% else %}
-define('{{ constant_key }}', '{{ constant_value }}');
+define('{{ constant_key }}', {{ _self.constant_val(constant_value) }});
 {% endif %}
 {% endfor %}
 {% endif %}
