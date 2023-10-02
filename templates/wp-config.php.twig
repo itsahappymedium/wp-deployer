@@ -13,7 +13,7 @@ $table_prefix = '{{ database['table_prefix']|default('wp_') }}';
 {% macro constant_arr(arr, level) %}
 {% for arr_key, arr_value in arr %}
 {% if arr_value is iterable %}
-{% if arr_value[0] is defined %}
+{% if arr_value[0] is defined or arr_value|length == 0 %}
 {% for i in range(0, level) %}  {% endfor %}'{{ arr_key }}' => array({{ _self.constant_inline_arr(arr_value) }}),
 {% else %}
 {% for i in range(0, level) %}  {% endfor %}'{{ arr_key }}' => array(
@@ -31,7 +31,7 @@ $table_prefix = '{{ database['table_prefix']|default('wp_') }}';
 {% for key, value in arr %}{{ _self.constant_val(value) }}{% if key != arr|length - 1 %}, {% endif %}{% endfor %}{% endmacro %}
 {% for constant_key, constant_value in wp_config_constants %}
 {% if constant_value is iterable %}
-{% if constant_value[0] is defined %}
+{% if constant_value[0] is defined or constant_value|length == 0 %}
 define('{{ constant_key }}', array({{ _self.constant_inline_arr(constant_value) }}));
 {% else %}
 define('{{ constant_key }}', array(
