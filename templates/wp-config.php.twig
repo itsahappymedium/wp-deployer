@@ -9,8 +9,6 @@ define('WPLANG', '');
 
 $table_prefix = '{{ database['table_prefix']|default('wp_') }}';
 
-{{ secret_keys|raw }}
-
 {% if wp_config_constants is defined %}
 {% macro constant_arr(arr, level) %}
 {% for arr_key, arr_value in arr %}

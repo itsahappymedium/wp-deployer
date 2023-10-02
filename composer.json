@@ -23,6 +23,7 @@
   "require": {
     "php": "^7.3|^8.0",
     "deployer/dist": "^6.8",
+    "paragonie/random-lib": "^2.0",
     "twig/twig": "^3.4.3",
     "wp-cli/wp-cli-bundle": "^2.6"
   }

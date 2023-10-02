@@ -207,14 +207,13 @@ class WP_Deployer {
     task('setup:local', function () {
       $templates = $this->get_templates_list();
       $config = $this->load_yml('config.yml', '.default');
-      $pass = $this->generate_random_string();
+      $pass = $this->generate_password();
       $data = array(
         'database'            => $config['database'],
         'deploy_path'         => array_key_exists('deploy_path', $config) ? $config['deploy_path'] : '/var/www/public_html',
         'env'                 => 'local',
-        'secret_keys'         => $this->generate_secrets(),
         'url'                 => $config['url'],
-        'wp_config_constants' => array_key_exists('wp_config_constants', $config) ? $config['wp_config_constants'] : array(),
+        'wp_config_constants' => $this->prepend_salts(array_key_exists('wp_config_constants', $config) ? $config['wp_config_constants'] : array()),
         'wp_config_add'       => array_key_exists('wp_config_add', $config) ? $config['wp_config_add'] : null,
         'wp_content_dir'      => array_key_exists('wp_content_dir', $config) ? $config['wp_content_dir'] : 'wp-content/content',
         'wp_site_url'         => array_key_exists('wp_site_url', $config) ? $config['wp_site_url'] : $config['url']
@@ -227,15 +226,15 @@ class WP_Deployer {
         file_put_contents($file_name, $contents);
       }
 
+      writeln('');
+      writeln('-----------------------------------');
+      writeln("Username: {$config['wp_user']}");
+      writeln("Password: $pass");
+      writeln('-----------------------------------');
+      writeln('');
+
       runLocally("./vendor/bin/wp core install --url='{$config['url']}' --title='{$config['application']}' --admin_user='{$config['wp_user']}' --admin_password='$pass' --admin_email='{$config['wp_email']}'");
       runLocally("./vendor/bin/wp theme activate {$config['theme_name']}");
-
-      writeln('');
-      writeln('----------------------------------');
-      writeln("| Username: {$config['wp_user']}");
-      writeln("| Password: $pass");
-      writeln('----------------------------------');
-      writeln('');
     });
 
     desc('Generates the wp-config.php file for staging or production');
@@ -244,15 +243,14 @@ class WP_Deployer {
 
       $templates = $this->get_templates_list();
       $theme = get('theme_name');
-      $pass = $this->generate_random_string();
+      $pass = $this->generate_password();
       $stage = get('stage');
       $data = array(
         'database'            => get('database'),
         'deploy_path'         => get('deploy_path'),
         'env'                 => $stage,
-        'secret_keys'         => $this->generate_secrets(),
         'url'                 => get('url'),
-        'wp_config_constants' => has('wp_config_constants') ? get('wp_config_constants') : array(),
+        'wp_config_constants' => $this->prepend_salts(has('wp_config_constants') ? get('wp_config_constants') : array()),
         'wp_config_add'       => has('wp_config_add') ? get('wp_config_add') : null,
         'wp_content_dir'      => get('wp_content_dir'),
         'wp_site_url'         => get('wp_site_url')
@@ -291,12 +289,21 @@ class WP_Deployer {
     after('deploy:failed', 'deploy:unlock');
   }
 
-  private function generate_random_string($length = 12) {
-    return bin2hex(openssl_random_pseudo_bytes($length / 2));
-  }
+  private function generate_password($length = 12, $special_chars = true, $extra_special_chars = false) {
+    $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-  private function generate_secrets() {
-    return file_get_contents('https://api.wordpress.org/secret-key/1.1/salt');
+    if ($special_chars) {
+      $chars .= '!@#$%^&*()';
+    }
+
+    if ($extra_special_chars) {
+      $chars .= '-_ []{}<>~`+=,.;:/?|';
+    }
+
+    $factory = new RandomLib\Factory;
+    $generator = $factory->getMediumStrengthGenerator();
+
+    return $generator->generateString($length, $chars);
   }
 
   private function get_templates_list() {
@@ -327,6 +334,38 @@ class WP_Deployer {
     });
 
     return $contents;
+  }
+
+  private function prepend_salts($wp_config_constants = array()) {
+    $generated = array();
+
+    foreach (array('AUTH', 'SECURE_AUTH', 'LOGGED_IN', 'NONCE') as $first) {
+      foreach (array('KEY', 'SALT') as $second) {
+        $key = "{$first}_{$second}";
+        if (!isset($wp_config_constants[$key])) {
+          $generated[$key] = $this->generate_password(64, true, true);
+        }
+      }
+    }
+
+    $wp_config_constants = array_merge($generated, $wp_config_constants);
+
+    if (!empty($generated)) {
+      writeln('');
+      writeln('-------------------------------------------------------------------------------------');
+
+      foreach (array('AUTH', 'SECURE_AUTH', 'LOGGED_IN', 'NONCE') as $first) {
+        foreach (array('KEY', 'SALT') as $second) {
+          $key = "{$first}_{$second}";
+          writeln("{$key}: {$wp_config_constants[$key]}");
+        }
+      }
+
+      writeln('-------------------------------------------------------------------------------------');
+      writeln('');
+    }
+
+    return $wp_config_constants;
   }
 
   private function render_template($file, $options = array(), $stage = null) {
