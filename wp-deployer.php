@@ -357,7 +357,7 @@ class WP_Deployer {
       foreach (array('AUTH', 'SECURE_AUTH', 'LOGGED_IN', 'NONCE') as $first) {
         foreach (array('KEY', 'SALT') as $second) {
           $key = "{$first}_{$second}";
-          writeln("{$key}: {$wp_config_constants[$key]}");
+          writeln("{$key}: '{$wp_config_constants[$key]}'");
         }
       }
 
