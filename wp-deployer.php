@@ -151,6 +151,26 @@ class WP_Deployer {
       run('ln -sfn {{release_path}} {{public_path}}');
     });
 
+    desc('Exports the local database');
+    task('db:backup:local', function () {
+      $db_file = '{{db_backups_path}}/local-' . date('ymdHis') . '.sql';
+
+      runLocally('mkdir -p db_backups');
+      runLocally("./vendor/bin/wp db export $db_file --add-drop-table", [ 'timeout' => null ]);
+    });
+
+    desc('Exports the remote database');
+    task('db:backup:remote', function () {
+      $stage = get('stage');
+      $db_file = '{{db_backups_path}}/' . $stage . '-' . date('ymdHis') . '.sql';
+
+      run('mkdir -p {{shared_path}}/db_backups');
+      cd('{{release_path}}');
+      runLocally("./vendor/bin/wp db export {{shared_path}}/$db_file --add-drop-table --ssh={{user}}@{{hostname}}:{{release_path}}");
+      runLocally('mkdir -p db_backups');
+      download("{{shared_path}}/$db_file", $db_file);
+    });
+
     desc('Converts the local database from utf8mb4_unicode_520_ci encoding to utf8mb4_unicode_ci');
     task('db:fix', function () {
       $db_file = '{{db_backups_path}}/' . date('ymdHis') . '.sql';

@@ -211,6 +211,11 @@ Exports and downloads/uploads the database to/from `stage` and then imports it.
 Downloads/uploads the contents of your `content/uploads` directory to/from `stage`.
 
 
+### `dep db:backup:<local/remote> [stage]`
+
+Exports and downloads the database from `stage` (or local).
+
+
 ### `dep db:fix`
 
 Extracts the local copy of your database and replaces all occurances of `utf8mb4_unicode_520_ci` to `utf8mb4_unicode_ci` and then re-imports it. This solves [the issue](https://stackoverflow.com/questions/42385099/1273-unknown-collation-utf8mb4-unicode-520-ci) where the server is using a different version of MySQL than your local.
