@@ -24,7 +24,7 @@ $table_prefix = '{{ database['table_prefix']|default('wp_') }}';
 {% endfor %}
 {% endmacro %}
 {% macro constant_val(val) %}
-{% if val is same as(true) %}true{% elseif val is same as(false) %}false{% else %}'{{ val }}'{% endif %}
+{% if val is same as(true) %}true{% elseif val is same as(false) %}false{% elseif val matches '/^\\d+$/' or val matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{ val|raw }}{% else %}'{{ val|raw }}'{% endif %}
 {% endmacro %}
 {% macro constant_inline_arr(arr) %}
 {% for key, value in arr %}{{ _self.constant_val(value) }}{% if key != arr|length - 1 %}, {% endif %}{% endfor %}{% endmacro %}
