@@ -11,6 +11,11 @@
       "name": "Happy Medium",
       "email": "developers@itsahappymedium.com",
       "homepage": "https://itsahappymedium.com"
+    },
+    {
+      "name": "Kodie Grantham",
+      "email": "kodie.grantham@gmail.com",
+      "homepage": "https://kodieg.com"
     }
   ],
   "homepage": "https://github.com/itsahappymedium/wp-deployer",
