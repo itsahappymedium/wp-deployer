@@ -71,7 +71,7 @@ class WP_Deployer {
     ));
 
     set('shared_dirs', array(
-      'content/uploads'
+      '{{wp_content_dir}}/uploads'
     ));
 
     set('writable_dirs', array(
