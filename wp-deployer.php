@@ -192,7 +192,7 @@ class WP_Deployer {
       runLocally('mkdir -p db_backups');
       download("{{shared_path}}/$db_file", $db_file);
       runLocally("./vendor/bin/wp db import $db_file");
-      runLocally("./vendor/bin/wp search-replace {{url}} $local_url");
+      runLocally("./vendor/bin/wp search-replace {{url}} --all-tables $local_url");
       runLocally("rm $db_file");
       run("rm {{shared_path}}/$db_file");
     })->once();
@@ -211,7 +211,7 @@ class WP_Deployer {
       upload($db_file, "{{shared_path}}/$db_file");
       cd('{{release_path}}');
       runLocally("./vendor/bin/wp db import {{shared_path}}/$db_file --ssh={{user}}@{{hostname}}:{{release_path}}");
-      runLocally("./vendor/bin/wp search-replace $local_url {{url}} --ssh={{user}}@{{hostname}}:{{release_path}}");
+      runLocally("./vendor/bin/wp search-replace $local_url {{url}} --all-tables --ssh={{user}}@{{hostname}}:{{release_path}}");
       run("rm {{shared_path}}/$db_file");
       runLocally("rm $db_file");
     })->once();
