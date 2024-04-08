@@ -205,15 +205,19 @@ Deploys your website to the `stage` (which is defined in your `config.yml` file)
 
 Exports and downloads/uploads the database to/from `stage` and then imports it.
 
+### `dep db:backup:<local/remote> [stage]`
+
+Exports and downloads the database from `stage` (or local).
+
 
 ### `dep uploads:<push/pull> <stage>`
 
 Downloads/uploads the contents of your `content/uploads` directory to/from `stage`.
 
 
-### `dep db:backup:<local/remote> [stage]`
+### `dep shared:<push/pull> <stage>`
 
-Exports and downloads the database from `stage` (or local).
+Downloads/uploads all contents of all directories listed in `shared_dirs` to/from `stage`.
 
 
 ### `dep db:fix`

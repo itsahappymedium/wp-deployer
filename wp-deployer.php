@@ -219,7 +219,7 @@ class WP_Deployer {
     desc('Gets the site initially all set up for local development');
     task('setup:init', function () {
       invoke('setup:local');
-      invoke('uploads:pull');
+      invoke('shared:pull');
       invoke('db:pull');
     });
 
@@ -296,14 +296,28 @@ class WP_Deployer {
       runLocally("./vendor/bin/wp theme activate {$theme}");
     });
 
+    desc('Pulls all directories that are shared between uploads (shared_dirs)');
+    task('shared:pull', function () {
+      foreach(get('shared_dirs') as $shared_dir) {
+        download("{{shared_path}}/{$shared_dir}", $shared_dir);
+      }
+    });
+
+    desc('Pushes all directories that are shared between uploads (shared_dirs)');
+    task('shared:push', function () {
+      foreach(get('shared_dirs') as $shared_dir) {
+        upload($shared_dir, "{{shared_path}}/{$shared_dir}");
+      }
+    });
+
     desc('Pulls the uploads');
     task('uploads:pull', function () {
-      download('{{deploy_path}}/shared/{{wp_content_dir}}/uploads/', '{{wp_content_dir}}/uploads');
+      download('{{shared_path}}/{{wp_content_dir}}/uploads', '{{wp_content_dir}}/uploads');
     });
 
     desc('Pushes the uploads');
     task('uploads:push', function () {
-      upload('{{wp_content_dir}}/uploads/', '{{deploy_path}}/shared/{{wp_content_dir}}/uploads');
+      upload('{{wp_content_dir}}/uploads', '{{shared_path}}/{{wp_content_dir}}/uploads');
     });
 
     after('deploy:failed', 'deploy:unlock');
