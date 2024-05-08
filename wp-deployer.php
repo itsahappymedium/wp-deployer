@@ -192,7 +192,7 @@ class WP_Deployer {
       runLocally('mkdir -p db_backups');
       download("{{shared_path}}/$db_file", $db_file);
       runLocally("./vendor/bin/wp db import $db_file");
-      runLocally("./vendor/bin/wp search-replace {{url}} --all-tables $local_url");
+      runLocally("./vendor/bin/wp search-replace {{url}} $local_url --all-tables");
       runLocally("rm $db_file");
       run("rm {{shared_path}}/$db_file");
     })->once();
